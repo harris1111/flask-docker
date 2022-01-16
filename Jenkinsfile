@@ -10,7 +10,7 @@ pipeline {
       agent {
           docker {
             image 'python:3.8-slim-buster'
-            args '--privileged -u root -v /tmp:/root/.cache'
+            args '-u root 0:0 /tmp:/root/.cache'
           }
       }
       steps {

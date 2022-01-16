@@ -31,7 +31,7 @@ pipeline {
         sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
         sh "docker image ls | grep ${DOCKER_IMAGE}"
         withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'harris1111', passwordVariable: 'a22Jju$xSe84tV4q')]) {
-            sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+            sh 'echo $DOCKER_PASSWORD | docker login --username 'harris1111' --password 'a22Jju$xSe84tV4q''
             sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
             sh "docker push ${DOCKER_IMAGE}:latest"
         }

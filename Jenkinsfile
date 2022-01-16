@@ -1,13 +1,12 @@
 pipeline {
-
   agent none
 
   environment {
-    DOCKER_IMAGE = "harris1111/flask-docker"
+    DOCKER_IMAGE = 'harris1111/flask-docker'
   }
 
   stages {
-    stage("Test") {
+    stage('Test') {
       agent {
           docker {
             image 'python:3.8-slim-buster'
@@ -15,23 +14,23 @@ pipeline {
           }
       }
       steps {
-        sh "pip install poetry"
-        sh "poetry install"
-        sh "poetry run pytest"
+        sh 'pip install poetry'
+        sh 'poetry install'
+        sh 'poetry run pytest'
       }
     }
 
-    stage("build") {
-      agent { node {label 'built-in'}}
+    stage('build') {
+      agent { node { label 'built-in' } }
       environment {
-        DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
+        DOCKER_TAG = "${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0, 7)}"
       }
       steps {
         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . "
         sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
         sh "docker image ls | grep ${DOCKER_IMAGE}"
-        withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'harris1111', passwordVariable: 'a22Jju$xSe84tV4q')]) {
-            sh 'echo $DOCKER_PASSWORD | docker login --username 'harris1111' --password 'a22Jju$xSe84tV4q''
+        withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
             sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
             sh "docker push ${DOCKER_IMAGE}:latest"
         }
@@ -45,10 +44,10 @@ pipeline {
 
   post {
     success {
-      echo "SUCCESSFUL"
+      echo 'SUCCESSFUL'
     }
     failure {
-      echo "FAILED"
+      echo 'FAILED'
     }
   }
 }

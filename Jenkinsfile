@@ -5,14 +5,14 @@ pipeline {
     DOCKER_IMAGE = 'harris1111/flask-docker'
     /* groovylint-disable-next-line DuplicateStringLiteral */
   }
-    stage("build") {
-      agent { node {label 'master'}}
+    stage('build') {
+      agent { node { label 'master' } }
       environment {
-        DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
+        DOCKER_TAG = "${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0, 7)}"
       }
       steps {
-        sh "sudo apt update"
-        sh "sudo apt -V install gnupg2 pass"
+        sh 'sudo apt update'
+        sh 'sudo apt -V install gnupg2 pass'
         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . "
         sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
         sh "docker image ls | grep ${DOCKER_IMAGE}"
@@ -28,14 +28,14 @@ pipeline {
         sh "docker image rm ${DOCKER_IMAGE}:latest"
       }
     }
-  }
+}
 
-  post {
+post {
     success {
       echo 'SUCCESSFUL'
     }
     failure {
       echo 'FAILED'
     }
-  }
 }
+

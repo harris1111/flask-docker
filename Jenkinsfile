@@ -4,9 +4,9 @@ pipeline {
 
   environment {
     DOCKER_IMAGE = "harris1111/flask-docker"
-    registry = "harris1111/flask-docker" 
-    registryCredential = 'harris1111' 
-    dockerImage = '' 
+    registry = "harris1111/flask-docker"
+    registryCredential = 'harris1111'
+    dockerImage = ''
   }
 
   stages {
@@ -23,29 +23,30 @@ pipeline {
         sh "poetry run pytest"
       }
     }
-  stages { 
-        stage('Cloning our Git') { 
-            steps { 
-                git 'https://github.com/harris1111/flask-docker' 
+  }
+  stages {
+        stage('Cloning our Git') {
+            steps {
+                git 'https://github.com/harris1111/flask-docker'
             }
-        } 
-        stage('Building our image') { 
-            steps { 
-                script { 
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER" 
-                }
-            } 
         }
-        stage('Deploy our image') { 
-            steps { 
-                script { 
-                    docker.withRegistry( '', registryCredential ) { 
-                        dockerImage.push() 
-                    }
-                } 
+        stage('Building our image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
-        } 
-        
+        }
+        stage('Deploy our image') {
+            steps {
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+  }
   //   stage("build") {
   //     agent { node {label 'master'}}
   //     environment {
@@ -78,4 +79,4 @@ pipeline {
       echo "FAILED"
     }
   }
-}
+

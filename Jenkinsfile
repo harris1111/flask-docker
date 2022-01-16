@@ -14,6 +14,8 @@ pipeline {
           }
       }
       steps {
+        sh 'sudo chown "$USER":"$USER" /home/"$USER"/.docker -R'
+        sh 'sudo chmod g+rwx "/home/$USER/.docker" -R'
         sh 'pip install poetry'
         sh 'poetry install'
         sh 'poetry run pytest'

@@ -1,16 +1,16 @@
 pipeline {
-
   agent none
 
   environment {
-    DOCKER_IMAGE = "harris1111/flask-docker"
-    registry = "harris1111/flask-docker"
+    DOCKER_IMAGE = 'harris1111/flask-docker'
+    /* groovylint-disable-next-line DuplicateStringLiteral */
+    registry = 'harris1111/flask-docker'
     registryCredential = 'harris1111'
     dockerImage = ''
   }
 
   stages {
-    stage("Test") {
+    stage('Test') {
       agent {
           docker {
             image 'python:3.8-slim-buster'
@@ -18,34 +18,33 @@ pipeline {
           }
       }
       steps {
-        sh "pip install poetry"
-        sh "poetry install"
-        sh "poetry run pytest"
+        sh 'pip install poetry'
+        sh 'poetry install'
+        sh 'poetry run pytest'
       }
     }
   }
-  stages {
-        stage('Cloning our Git') {
-            steps {
-                git 'https://github.com/harris1111/flask-docker'
-            }
+  stage('Cloning our Git') {
+    steps {
+      git 'https://github.com/harris1111/flask-docker'
+    }
+  }
+  stage('Building our image') {
+    steps {
+      script {
+        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+      }
+    }
+  }
+  stage('Deploy our image') {
+    steps {
+      script {
+        /* groovylint-disable-next-line SpaceInsideParentheses */
+        docker.withRegistry( '', registryCredential ) {
+          dockerImage.push()
         }
-        stage('Building our image') {
-            steps {
-                script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                }
-            }
-        }
-        stage('Deploy our image') {
-            steps {
-                script {
-                    docker.withRegistry( '', registryCredential ) {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+      }
+    }
   }
   //   stage("build") {
   //     agent { node {label 'master'}}
@@ -73,10 +72,10 @@ pipeline {
 
   post {
     success {
-      echo "SUCCESSFUL"
+      echo 'SUCCESSFUL'
     }
     failure {
-      echo "FAILED"
+      echo 'FAILED'
     }
   }
 }
